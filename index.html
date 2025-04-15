@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cubo 4D</title>
+  <style>
+    body { margin: 0; overflow: hidden; background-color: #000; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const vertices = [];
+  for (let i = 0; i < 16; i++) {
+    vertices.push([
+      (i & 1) ? 1 : -1,
+      (i & 2) ? 1 : -1,
+      (i & 4) ? 1 : -1,
+      (i & 8) ? 1 : -1,
+    ]);
+  }
+
+  const edges = [];
+  for (let i = 0; i < vertices.length; i++) {
+    for (let j = i + 1; j < vertices.length; j++) {
+      let diff = 0;
+      for (let k = 0; k < 4; k++) {
+        if (vertices[i][k] !== vertices[j][k]) diff++;
+      }
+      if (diff === 1) edges.push([i, j]);
+    }
+  }
+
+  let angle = 0;
+
+  function project4Dto3D(point, angle) {
+    const [x, y, z, w] = point;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const x2 = x * cos - w * sin;
+    const w2 = x * sin + w * cos;
+    return [x2, y, z, w2];
+  }
+
+  function project3Dto2D(point) {
+    const scale = 200 / (4 - point[2]);
+    return [
+      point[0] * scale + canvas.width / 2,
+      point[1] * scale + canvas.height / 2
+    ];
+  }
+
+  function draw() {
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const projected = vertices.map(v => {
+      const rotated = project4Dto3D(v, angle);
+      return project3Dto2D(rotated);
+    });
+
+    ctx.strokeStyle = "cyan";
+    edges.forEach(([a, b]) => {
+      const [x1, y1] = projected[a];
+      const [x2, y2] = projected[b];
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    });
+
+    angle += 0.01;
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+</script>
+</body>
+</html>
