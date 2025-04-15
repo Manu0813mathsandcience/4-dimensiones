@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizador de Cubo 4D (Teseracto)</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background: #000;
+    }
+    h1 {
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Visualizador de Cubo 4D (Teseracto)</h1>
+  <canvas id="canvas" width="600" height="600"></canvas>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const size = 100;
+    let angle = 0;
+
+    // 16 puntos del cubo 4D
+    function generatePoints4D() {
+      let points = [];
+      for (let x = -1; x <= 1; x += 2) {
+        for (let y = -1; y <= 1; y += 2) {
+          for (let z = -1; z <= 1; z += 2) {
+            for (let w = -1; w <= 1; w += 2) {
+              points.push([x, y, z, w]);
+            }
+          }
+        }
+      }
+      return points;
+    }
+
+    //
